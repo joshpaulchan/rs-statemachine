@@ -22,13 +22,22 @@ In pseudo code, what I want to implement is something akin to:
 ```java
 interface StateMachine<State, Event> {
   void? bool? Result? Future<State>? dispatch( Event ) // dispatch an event that may trigger a transition
-  // wonder if there should be some way to rehydrate the state machine...? getDispatches()?
+	// wonder if there should be some way to rehydrate the state machine...? getDispatches()?
+  StateMachine addHandler( EventHandler ) // add a listener and only trigger on certain state transitions?
 
-  start(); stop(); // necessary?
-  
-  StateMachine addListener( EventListener ) // add a listener and only trigger on certain state transitions?
-  
   State getState() // introspect current state
-  List<State> getStates() // introspect last n states? all states?
+  getStates() // introspect last n states? all states?
+}
+
+interface EventHandler {
+  Validator<AbstractState, AbstractEvent> preconditionValidator;
+  BiFunction<CurrentState, Event, NexState> stateGenerator; // should state be here...?
+  Consumer<Transition> sideEffectOnTransition;
+}
+
+class Transition { // passed to listen?
+  AbstractState previousState;
+  Event event;
+  AbstractState currentState;
 }
 ```
